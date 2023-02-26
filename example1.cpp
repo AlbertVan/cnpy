@@ -29,9 +29,20 @@ int main()
     assert(arr.shape.size() == 3 && arr.shape[0] == Nz && arr.shape[1] == Ny && arr.shape[2] == Nx);
     for(int i = 0; i < Nx*Ny*Nz;i++) assert(data[i] == loaded_data[i]);
 
+    std::cout << "npy load success " << std::endl;
+
     //append the same data to file
     //npy array on file now has shape (Nz+Nz,Ny,Nx)
-    cnpy::npy_save("arr1.npy",&data[0],{Nz,Ny,Nx},"a");
+    cnpy::npy_save("arr2.npy",&data[0],{Nz,Ny,Nx},"a");
+    // crc32()
+    // uint32_t self_crc =
+    //     uzlib_crc32((const void *)&data[0], arr.num_bytes(), 0);
+
+    // //   self_crc = self_crc ^ 0xffffffff;
+    // uint32_t zlib_crc =
+    //     crc32(0, (const unsigned char *)&data[0], arr.num_bytes());
+    // std::cout << "mycrc " << std::hex << self_crc << std::endl;
+    // std::cout << "zlibcrc " << zlib_crc << std::dec << std::endl;
 
     //now write to an npz file
     //non-array variables are treated as 1D arrays with 1 element
