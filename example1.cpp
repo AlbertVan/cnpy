@@ -9,8 +9,41 @@ const int Nx = 128;
 const int Ny = 64;
 const int Nz = 32;
 
+static double seconds()
+{
+#if defined(_WIN32) || defined(_WIN64)
+  LARGE_INTEGER frequency, now;
+  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceCounter  (&now);
+  return now.QuadPart / double(frequency.QuadPart);
+#else
+  timespec now;
+  clock_gettime(CLOCK_REALTIME, &now);
+  return now.tv_sec + now.tv_nsec / 1000000000.0;
+#endif
+}
+
+
+
 int main()
 {
+    double startTime, duration;
+
+    startTime = seconds();
+    for (int i = 0; i < 10000000; ++i) {
+        cnpy::make_local_header("var1", 0xffffaaaa, 1024);
+    }
+    duration  = seconds() - startTime;
+    printf("new      :  %.3fs, \n", duration);
+
+    startTime = seconds();
+    for (int i = 0; i < 10000000; ++i) {
+        cnpy::make_local_header_old("var1", 0xffffaaaa, 1024);
+    }
+    duration  = seconds() - startTime;
+    printf("old      :  %.3fs, \n", duration);
+
+    return -1;
     //set random seed so that result is reproducible (for testing)
     srand(0);
     //create random data

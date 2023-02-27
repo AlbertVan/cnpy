@@ -542,13 +542,40 @@ std::vector<char> cnpy::create_npy_header(const std::vector<size_t>& shape, char
         dict += ", ";
         dict += std::to_string(shape[i]);
     }
-    if(shape.size() == 1) dict += ",";
+    if(shape.size() == 1) { 
+        dict += ",";
+    }
     dict += "), }";
     //pad with spaces so that preamble+dict is modulo 16 bytes. preamble is 10 bytes. dict needs to end with \n
     int remainder = 16 - (10 + dict.size()) % 16;
     dict.insert(dict.end(),remainder,' ');
     dict.back() = '\n';
 
+    std::cout << "ori dict: " << std::string(dict.begin(), dict.end()) << std::endl;
+    std::cout << "ori size: " << dict.size() << std::endl;
+
+    std::string dict_str;
+    dict_str += "{'descr': '";
+    dict_str += type_class;
+    dict_str += std::to_string(word_size);
+    dict_str += "', 'fortran_order': False, 'shape': (";
+    dict_str += std::to_string(shape[0]);
+    for(size_t i = 1; i < shape.size(); i++) {
+        dict_str += ", ";
+        dict_str += std::to_string(shape[i]);
+    }
+    if(shape.size() == 1) { 
+        dict_str += ",";
+    }
+    dict_str += "), }";
+
+    int new_remainder = 16 - (10 + dict_str.size()) % 16;
+    std::string new_remainder_str(new_remainder - 1, ' ');
+    dict_str += new_remainder_str;
+    dict_str += "\n";
+
+    std::cout << "new dict: " << dict_str << std::endl;
+    std::cout << "new size: " << dict_str.size() << std::endl;
     std::vector<char> header;
     header += (char) 0x93;
     header += "NUMPY";
