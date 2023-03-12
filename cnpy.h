@@ -21,6 +21,11 @@
 
 namespace cnpy {
 
+using tp_hash_key = size_t;
+using np_tp_tb = std::map<tp_hash_key, std::pair<char, size_t>>;
+
+extern np_tp_tb g_np_tp_tb;
+
 struct NpyArray {
     NpyArray(const std::vector<size_t>& _shape, size_t _word_size, bool _fortran_order,
              char _type_class)

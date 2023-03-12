@@ -22,7 +22,36 @@ static double seconds() {
 #endif
 }
 
+void test_type_id() {
+    std::cout << "bool   : " << typeid(bool).name() << std::endl;
+    std::cout << "char   : " << typeid(char).name() << std::endl;
+    std::cout << "short  : " << typeid(short).name() << std::endl;
+    std::cout << "int    : " << typeid(int).name() << std::endl;
+    std::cout << "long   : " << typeid(long).name() << std::endl;
+    std::cout << "float  : " << typeid(float).name() << std::endl;
+    std::cout << "double : " << typeid(double).name() << std::endl;
+    std::cout << "complex: " << typeid(std::complex<float>).name() << std::endl;
+    bool flag = true;
+    int int_flag = 2;
+    long long_flag = 2L;
+    std::cout << std::hex;
+    std::cout << "bool   : " << typeid(flag).hash_code() << std::endl;
+    std::cout << "bool   : " << typeid(bool).hash_code() << std::endl;
+    std::cout << "char   : " << typeid(char).hash_code() << std::endl;
+    std::cout << "short  : " << typeid(short).hash_code() << std::endl;
+    std::cout << "int    : " << typeid(int).hash_code() << std::endl;
+    std::cout << "int flag   : " << typeid(int_flag).hash_code() << std::endl;
+    std::cout << "long  : " << typeid(long).hash_code() << std::endl;
+    std::cout << "long flag : " << typeid(long_flag).hash_code() << std::endl;
+    std::cout << "float  : " << typeid(float).hash_code() << std::endl;
+    std::cout << "double : " << typeid(double).hash_code() << std::endl;
+    std::cout << "complex: " << typeid(std::complex<float>).hash_code() << std::endl;
+    std::cout << "complex: " << typeid(std::complex<double>).hash_code() << std::endl;
+    std::cout << std::dec;
+}
+
 int main() {
+    test_type_id();
     double startTime, duration;
 
     startTime = seconds();

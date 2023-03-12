@@ -1,6 +1,7 @@
 // Copyright (C) 2011  Carl Rogers
 // Released under MIT License
-// license available in LICENSE file, or at http://www.opensource.org/licenses/mit-license.php
+// license available in LICENSE file, or at
+// http://www.opensource.org/licenses/mit-license.php
 
 #include "cnpy.h"
 #include <stdint.h>
@@ -14,70 +15,52 @@
 
 namespace cnpy {
 
+// np_tp_tb g_np_tp_tb = {
+//     {typeid(float).hash_code(), {'f', sizeof(float)}},
+//     {typeid(double).hash_code(), {'f', sizeof(double)}},
+//     {typeid(long double).hash_code(), {'f', sizeof(long double)}},
+//     {typeid(int).hash_code(), {'i', sizeof(int)}},
+//     {typeid(char).hash_code(), {'i', sizeof(char)}},
+//     {typeid(short).hash_code(), {'i', sizeof(short)}},
+//     {typeid(long).hash_code(), {'i', sizeof(long)}},
+//     {typeid(long long).hash_code(), {'i', sizeof(long long)}},
+
+//     {typeid(unsigned char).hash_code(), {'u', sizeof(unsigned char)}},
+//     {typeid(unsigned short).hash_code(), {'u', sizeof(unsigned short)}},
+//     {typeid(unsigned long).hash_code(), {'u', sizeof(unsigned long)}},
+//     {typeid(unsigned long long).hash_code(), {'u', sizeof(unsigned long long)}},
+//     {typeid(unsigned int).hash_code(), {'u', sizeof(unsigned int)}},
+
+//     {typeid(std::complex<float>).hash_code(), {'c', sizeof(std::complex<float>)}},
+//     {typeid(std::complex<double>).hash_code(), {'c', sizeof(std::complex<double>)}},
+//     {typeid(std::complex<long double>).hash_code(), {'c', sizeof(std::complex<long double>)}},
+// };
+
 char big_endian_test() {
     int x = 1;
     return (((char*)&x)[0]) ? '<' : '>';
 }
 
 char map_type(const std::type_info& t) {
-    if (t == typeid(float)) {
+    if (t == typeid(float) || t == typeid(double) || t == typeid(long double)) {
         return 'f';
     }
-    if (t == typeid(double)) {
-        return 'f';
-    }
-    if (t == typeid(long double)) {
-        return 'f';
-    }
-
-    if (t == typeid(int)) {
+    if (t == typeid(int) || t == typeid(char) || t == typeid(short) || t == typeid(long) ||
+        t == typeid(long long)) {
         return 'i';
     }
-    if (t == typeid(char)) {
-        return 'i';
-    }
-    if (t == typeid(short)) {
-        return 'i';
-    }
-    if (t == typeid(long)) {
-        return 'i';
-    }
-    if (t == typeid(long long)) {
-        return 'i';
-    }
-
-    if (t == typeid(unsigned char)) {
+    if (t == typeid(unsigned char) || t == typeid(unsigned short) || t == typeid(unsigned long) ||
+        t == typeid(unsigned long long) || t == typeid(unsigned int)) {
         return 'u';
     }
-    if (t == typeid(unsigned short)) {
-        return 'u';
-    }
-    if (t == typeid(unsigned long)) {
-        return 'u';
-    }
-    if (t == typeid(unsigned long long)) {
-        return 'u';
-    }
-    if (t == typeid(unsigned int)) {
-        return 'u';
-    }
-
     if (t == typeid(bool)) {
         return 'b';
     }
-
-    if (t == typeid(std::complex<float>)) {
+    if (t == typeid(std::complex<float>) || t == typeid(std::complex<double>) ||
+        t == typeid(std::complex<long double>)) {
         return 'c';
     }
-    if (t == typeid(std::complex<double>)) {
-        return 'c';
-    }
-    if (t == typeid(std::complex<long double>)) {
-        return 'c';
-    }
-
-    else
-        return '?';
+    return '?';
 }
 
 uint32_t crc32(uint32_t crc, const void* data, size_t length) {
@@ -382,7 +365,7 @@ std::string create_footer(uint16_t nrecs, uint32_t gh_size, uint32_t gh_offset) 
 }
 
 std::string npz_save_buffer(const npz_t& arrays) {
-    std::stringstream ss_buffer;
+    std::stringstream ss;
     size_t global_header_offset = 0;
     std::string global_header;
     std::string var_name = "";
@@ -411,15 +394,15 @@ std::string npz_save_buffer(const npz_t& arrays) {
         global_header += cur_global_header;
         global_header_offset += (nbytes + local_header.size());
         // write everything
-        ss_buffer.write(&local_header[0], sizeof(char) * local_header.size());
-        ss_buffer.write(&npy_header[0], sizeof(char) * npy_header.size());
-        ss_buffer.write(data, word_size * nels);
+        ss.write(&local_header[0], sizeof(char) * local_header.size());
+        ss.write(&npy_header[0], sizeof(char) * npy_header.size());
+        ss.write(data, word_size * nels);
     }
     // build footer
     auto footer = create_footer(arrays.size(), global_header.size(), global_header_offset);
-    ss_buffer.write(&global_header[0], sizeof(char) * global_header.size());
-    ss_buffer.write(&footer[0], sizeof(char) * footer.size());
-    return ss_buffer.str();
+    ss.write(&global_header[0], sizeof(char) * global_header.size());
+    ss.write(&footer[0], sizeof(char) * footer.size());
+    return ss.str();
 }
 
 }  // namespace cnpy
